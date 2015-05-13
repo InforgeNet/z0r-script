@@ -14,22 +14,47 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-shr(){
-	short=$(curl -s -L "http://z0r.it/yourls-api.php?signature=4e4b657a91&action=shorturl&keyword=$2&format=simply&url=$1")
-        echo $short
-        echo "$short" |xclip -selection clipboard
-	}
+#text clours
+readonly RED="\033[01;31m"
+readonly GREEN="\033[01;32m"
+readonly BLUE="\033[01;34m"
+readonly YELLOW="\033[00;33m"
+readonly BOLD="\033[01m"
+readonly FINE="\033[0m"
 
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
 url=(http://$1)
+apikey=4e4b657a91
+#upload function
+shr(){
+	short=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&keyword=$2&format=simply&url=$1")
+        echo $short
+        echo "$short" |xclip -selection clipboard
+	}
+#help screen
+help(){
+	echo -e $GREEN"======================================================================================"$FINE
+	echo -e "$YELLOW$BOLD$0$FINE, faster uploader for z0r.it shortner. Based on YOURL API"
+	echo "Copyright(C) 2015 Nhoya"
+        echo ""
+        echo -e $BOLD"  Usage: $0 [long_URL] [custom_name]"$FINE
+	echo "if you wont custom URL left the 2nd argument empty"
+	echo -e $GREEN"======================================================================================"$FINE
 
+	}
+
+#control over argument
+is_url(){
 if [[ $1 =~ $regex ]];then
 	shr $1 $2
 else
 if [[ $url =~ $regex ]];then
 	shr $1 $2
 else
-	echo "Enter a valid url
+	echo -e  $RED"Enter a valid url"$FINE
+	help
 fi
 fi
-
+}
+#main logic
+is_url $1 $2
