@@ -1,5 +1,5 @@
 # z0r-script
-**The Bash (Linux) Script for z0r.it** *(by inforge.net)*
+**The Bash (Linux) Script for z0r.it**
 
 This script lets you to **quickly shrink with z0r.it** any link and put the shrinked link into the clipboard.
 
