@@ -42,7 +42,6 @@ help(){
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
-
 #control over argument
 is_url(){
 if [[ $1 =~ $regex ]];then
@@ -55,6 +54,7 @@ else
 fi
 fi
 }
+#option parser
 opsparser(){
 while getopts ":h" opt; do
 		case "$opt" in
