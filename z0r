@@ -52,9 +52,21 @@ if [[ $url =~ $regex ]];then
 	shr $1 $2
 else
 	echo -e  $RED"Enter a valid url"$FINE
-	help
 fi
 fi
 }
-#main logic
+opsparser(){
+while getopts ":h" opt; do
+		case "$opt" in
+                h)  help
+                    exit 0
+		;;
+		\?) echo  -e $RED"enter a valid option, use -h for help"$FINE
+			exit 0
+		;;
+		esac
+done
+}
+
+opsparser $@
 is_url $1 $2
