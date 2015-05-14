@@ -41,12 +41,16 @@ expand(){
 	}
 #help screen
 help(){
-	echo -e $GREEN"======================================================================================"$FINE
 	echo -e "$YELLOW$BOLD$0$FINE, faster uploader for z0r.it shortner. Based on YOURL API"
 	echo "Copyright(C) 2015 Nhoya"
         echo ""
         echo -e $BOLD"  Usage: $0 [long_URL] [custom_name]"$FINE
-	echo "if you wont custom URL left the 2nd argument empty"
+	echo  "	keep empty custom_name field for normal URL format"
+	echo ""
+	echo -e $GREEN"======================================================================================"$FINE
+	echo " Available Options:"
+	echo "		-e <short_URL>				expand URL (short -> long)"
+	echo "		-h 					display this page"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
@@ -66,14 +70,15 @@ fi
 opsparser(){
 while getopts ":he:" opt; do
 		case "$opt" in
-                h)  	 help
-                   	 exit 0
+		h)	help
+		exit 0
+		;;
+		e)      expand $@
+		exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
-			exit 0
+		exit 0
 		;;
-		e) 	expand $@
-			exit 0
 		esac
 done
 }
