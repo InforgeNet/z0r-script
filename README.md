@@ -7,7 +7,6 @@ This script lets you to **quickly shrink with z0r.it** any link and put the shri
 
 *z0r-script is written in _Bash_*.
 
-
-
-## TODO:
-1. ...
+##HowTo
+z0r link -> create short link and will be copyed in clipboard
+z0r link custom_name -> create short link with custom name (if it is still used u will get empty output)
