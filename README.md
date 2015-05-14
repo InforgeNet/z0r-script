@@ -12,6 +12,6 @@ This script lets you to **quickly shrink with z0r.it** any link and put the shri
 
 *z0r [long_link] [custom_name]* -> create short link with custom name (if it is still used u will get empty output)
 
-*z0r -h* -> shows help
+*z0r  -h* -> shows help
 
-*z0r -e [short_link] -> expand function (short -> long)
+*z0r  -e [short_link] -> expand function (short -> long)
