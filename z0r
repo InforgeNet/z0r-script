@@ -76,11 +76,10 @@ while getopts ":he:" opt; do
 		;;
 		e)	if [[ $@ =~ $is_z0r ]];then
 				expand $@
-				exit 0
 			else
 				echo -e  $RED"Enter a valid z0r url(http://z0r.it/...)"$FINE
-				exit 0
 			fi
+			exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
 		exit 0
