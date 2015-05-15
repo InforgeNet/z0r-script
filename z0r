@@ -23,19 +23,20 @@ readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
+is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
 mode=-s
 apikey=4e4b657a91
 #upload function (long -> short)
 shr(){
-	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&tile=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1")
+	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1")
         echo $short
         echo "$short" |xclip -selection clipboard
 	}
 #expand function (short -> long)
 expand(){
 	avi=$(echo $@ |awk -F '/' '{print$NF}')
-	exp=$(curl $mode -L  "http://z0r.it/yourls-api.php?signature=$apikey&action=expand&format=simply&shorturl=$avi")
+	exp=$(curl $mode -L  "http://z0r.it/yourls-api.php?signature=$apikey&action=expand&title=check_with_z0r_scipt&format=simply&shorturl=$avi")
 	echo $exp
 	echo "$exp" |xclip -selection clipboard
 	}
@@ -73,8 +74,13 @@ while getopts ":he:" opt; do
 		h)	help
 		exit 0
 		;;
-		e)      expand $@
-		exit 0
+		e)	if [[ $@ =~ $is_z0r ]];then
+				expand $@
+				exit 0
+			else
+				echo -e  $RED"Enter a valid z0r url(http://z0r.it/...)"$FINE
+				exit 0
+			fi
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
 		exit 0
