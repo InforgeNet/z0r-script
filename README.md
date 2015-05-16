@@ -15,3 +15,5 @@ This script lets you to **quickly shrink with z0r.it** any link and put the shri
 *z0r  -h* -> shows help
 
 *z0r  -e [short_link] -> expand function (short -> long)
+
+*z0r -c [short_link]* -> show number of clicks
