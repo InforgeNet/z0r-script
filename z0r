@@ -52,9 +52,17 @@ help(){
 	echo " Available Options:"
 	echo "		-e <short_URL>				expand URL (short -> long)"
 	echo "		-h 					display this page"
+	echo "		-c<short_URL>				display numbers of clicks"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
+#stats
+stats(){
+avi=$(echo $@ |awk -F '/' '{print$NF}')
+click=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=url-stats&format=json&shorturl=$avi"|grep -Po '"clicks":.*?[^\\]"')
+echo $click
+}
+
 #control over argument
 is_url(){
 if [[ $1 =~ $regex ]];then
@@ -69,7 +77,7 @@ fi
 }
 #option parser
 opsparser(){
-while getopts ":he:" opt; do
+while getopts ":he:c:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -79,6 +87,9 @@ while getopts ":he:" opt; do
 			else
 				echo -e  $RED"Enter a valid z0r url(http://z0r.it/...)"$FINE
 			fi
+			exit 0
+		;;
+		c)	stats $@
 			exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
