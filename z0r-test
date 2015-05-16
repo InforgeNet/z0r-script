@@ -1,6 +1,0 @@
-#!/bin/bash
-url=$(curl -s -L "http://z0r.it/yourls-api.php?signature=4e4b657a91&action=url-stats&format=json&shorturl=43"|grep -Po '"clicks":.*?[^\\]"&&"ip":.*?[^\\]"' )
-
-
-echo $url
-
