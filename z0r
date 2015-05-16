@@ -22,6 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
+ver='1.1'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -42,7 +43,7 @@ expand(){
 	}
 #help screen
 help(){
-	echo -e "$YELLOW$BOLD$0$FINE, faster uploader for z0r.it shortner. Based on YOURL API"
+	echo -e "$YELLOW$BOLD$0$FINE $GREEN$ver$FINE, faster uploader for z0r.it shortner. Based on YOURL API"
 	echo "Copyright(C) 2015 Nhoya"
         echo ""
         echo -e $BOLD"  Usage: $0 [long_URL] [custom_name]"$FINE
@@ -77,7 +78,7 @@ fi
 }
 #option parser
 opsparser(){
-while getopts ":he:c:" opt; do
+while getopts ":hve:c:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -90,6 +91,9 @@ while getopts ":he:c:" opt; do
 			exit 0
 		;;
 		c)	stats $@
+			exit 0
+		;;
+		v)	echo $ver
 			exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
