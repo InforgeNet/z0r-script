@@ -55,6 +55,7 @@ help(){
 	echo "		-e <short_URL>				expand URL (short -> long)"
 	echo "		-h 					display this page"
 	echo "		-c<short_URL>				display numbers of clicks"
+	echo "		-d					check dependencies"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
