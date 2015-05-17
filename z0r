@@ -22,12 +22,12 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='1.1'
+ver='1.2'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
 mode=-s
-dep=(curl awk xclip)
+dep=(curl awk xclip wget)
 apikey=4e4b657a91
 #upload function (long -> short)
 shr(){
@@ -69,10 +69,18 @@ echo $click
 #control over argument
 is_url(){
 if [[ $1 =~ $regex ]];then
+	if wget --spider "$1" 2>/dev/null; then
 	shr $1 $2
+	else
+	echo -e $RED"Page does not exist"$FINE
+	fi
 else
 if [[ $url =~ $regex ]];then
-	shr $1 $2
+	if wget --spider "$1" 2>/dev/null; then
+		shr $1 $2
+	else
+	echo -e  $RED"Page does not exist"$FINE
+	fi
 else
 	echo -e  $RED"Enter a valid url"$FINE
 fi
