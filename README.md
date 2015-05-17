@@ -18,4 +18,6 @@ This script lets you to **quickly shrink with z0r.it** any link and put the shri
 
 *z0r -c [short_link]* -> show number of clicks
 
--*z0r -d* -> check dependencies
+*z0r -d* -> check dependencies
+
+*z0r -l* -> show history
