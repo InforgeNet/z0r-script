@@ -27,6 +27,7 @@ regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
 mode=-s
+dep=(curl awk xclip)
 apikey=4e4b657a91
 #upload function (long -> short)
 shr(){
@@ -76,9 +77,21 @@ else
 fi
 fi
 }
+#check dipendencies
+checkdep(){
+for i in "${dep[@]}"
+do
+        if ( which $i &>/dev/null ); then
+        echo -e $GREEN"$i found"$FINE
+else
+        echo -e $RED"$i not found"$FINE
+fi
+done
+}
+
 #option parser
 opsparser(){
-while getopts ":hve:c:" opt; do
+while getopts ":hvde:c:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -91,6 +104,9 @@ while getopts ":hve:c:" opt; do
 			exit 0
 		;;
 		c)	stats $@
+			exit 0
+		;;
+		d)	checkdep $i
 			exit 0
 		;;
 		v)	echo $ver
