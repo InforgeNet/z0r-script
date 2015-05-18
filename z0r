@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='1.3'
+ver='1.4'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -44,7 +44,7 @@ shr(){
 	}
 #expand function (short -> long)
 expand(){
-	avi=$(echo $@ |awk -F '/' '{print$NF}')
+	avi=$(echo ${@:2} |awk -F '/' '{print$NF}')
 	exp=$(curl $mode -L  "http://z0r.it/yourls-api.php?signature=$apikey&action=expand&title=check_with_z0r_scipt&format=simply&shorturl=$avi")
 	echo $exp
 	echo "$exp" |xclip -selection clipboard
@@ -64,56 +64,70 @@ help(){
 	echo "		-c <short_URL>				display numbers of clicks"
 	echo "		-d					check dependencies"
 	echo "		-l					show shorting history"
+	echo "		-m <long_URL1> <long_URL2> ...		mass shorting"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
 #stats
 stats(){
-avi=$(echo $@ |awk -F '/' '{print$NF}')
-click=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=url-stats&format=json&shorturl=$avi"|grep -Po '"clicks":.*?[^\\]"')
-echo $click
+	lil=$(echo ${@:2} |awk -F '/' '{print$NF}')
+	click=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=url-stats&format=json&shorturl=$lil"|grep -Po '"clicks":.*?[^\\]"')
+	echo $click
 }
-
+mss(){
+	for i in ${@:2}; do
+		mass=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$i"|awk -F '/' '{print$NF}')
+	if wget --spider "$i" 2>/dev/null; then
+ 		if  [ -n "$mass" ] ; then
+			echo "http://z0r.it/$mass" && echo "$(date +"%d-%h-%Y %H.%M.%S")       -        http://z0r.it/$mass   -       $i">>$LOGDIR
+		else
+			echo -e $RED"Bad Request"$FINE
+		fi
+	else
+	echo -e $RED"$i is not a valir URL"$FINE
+	fi
+	done
+}
 #control over argument
 is_url(){
-if [[ $1 =~ $regex ]];then
-	if wget --spider "$1" 2>/dev/null; then
-	shr $1 $2
-	else
-	echo -e $RED"Page does not exist"$FINE
-	fi
-else
-if [[ $url =~ $regex ]];then
-	if wget --spider "$1" 2>/dev/null; then
+	if [[ $1 =~ $regex ]];then
+		if wget --spider "$1" 2>/dev/null; then
 		shr $1 $2
+		else
+		echo -e $RED"Page does not exist"$FINE
+		fi
 	else
-	echo -e  $RED"Page does not exist"$FINE
+	if [[ $url =~ $regex ]];then
+		if wget --spider "$1" 2>/dev/null; then
+			shr $1 $2
+		else
+		echo -e  $RED"Page does not exist"$FINE
+		fi
+	else
+		echo -e  $RED"Enter a valid url"$FINE
 	fi
-else
-	echo -e  $RED"Enter a valid url"$FINE
-fi
-fi
+	fi
 }
 #check dipendencies
 checkdep(){
-for i in "${dep[@]}"
-do
-        if ( which $i &>/dev/null ); then
-        echo -e $GREEN"$i found"$FINE
-else
-        echo -e $RED"$i not found"$FINE
-fi
-done
+	for i in "${dep[@]}"
+	do
+        	if ( which $i &>/dev/null ); then
+        	echo -e $GREEN"$i found"$FINE
+	else
+        	echo -e $RED"$i not found"$FINE
+	fi
+	done
 }
 
 #option parser
 opsparser(){
-while getopts ":hvlde:c:" opt; do
+while getopts ":hvlde:c:m:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
 		;;
-		e)	if [[ $@ =~ $is_z0r ]];then
+		e)	if [[ ${@:2} =~ $is_z0r ]];then
 				expand $@
 			else
 				echo -e  $RED"Enter a valid z0r url(http://z0r.it/...)"$FINE
@@ -124,6 +138,10 @@ while getopts ":hvlde:c:" opt; do
 			exit 0
 		;;
 		d)	checkdep $i
+			exit 0
+		;;
+		m)
+			mss $@
 			exit 0
 		;;
 		v)	echo $ver
