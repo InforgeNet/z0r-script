@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='1.4'
+ver='1.5'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -34,9 +34,14 @@ LOGDIR=/$HOME/.z0r_logs
 #upload function (long -> short)
 shr(){
 	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1"|awk -F '/' '{print$NF}')
+	uc="$http://z0r.it/$short"
 	if  [ -n "$short" ]; then
-        echo "http://z0r.it/$short" && echo "$(date +"%d-%h-%Y %H.%M.%S")	-	 http://z0r.it/$short	-	$1">>$LOGDIR
-        echo "http://z0r.it/$short" |xclip -selection clipboard
+		if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1" |grep -q "Errore 406"; then
+                	echo -e $RED"Error 406 - URL not valid(try to use https instead of http)"$FINE
+        	else
+			echo "http://z0r.it/$short" && echo "$(date +"%d-%h-%Y %H.%M.%S")	-	 $uc	-	$1">>$LOGDIR
+        		echo "$uc" |xclip -selection clipboard
+		fi
 	else
 	if [ -n "$2" ]; then
 	echo -e $RED"custom URL already in use"$FINE
@@ -66,6 +71,7 @@ help(){
 	echo "		-d					check dependencies"
 	echo "		-l					show shorting history"
 	echo "		-m <long_URL1> <long_URL2> ...		mass shorting"
+	echo "		-r					reset history"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
@@ -80,7 +86,12 @@ mss(){
 		mass=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$i"|awk -F '/' '{print$NF}')
 	if wget --spider "$i" 2>/dev/null; then
  		if  [ -n "$mass" ] ; then
-			echo "http://z0r.it/$mass" && echo "$(date +"%d-%h-%Y %H.%M.%S")       -        http://z0r.it/$mass   -       $i">>$LOGDIR
+			if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$i" |grep -q "Errore 406"; then
+                        	echo -e $RED"Error 406 - URL not valid(try to use https instead of http)"$FINE
+                	else
+
+				echo "http://z0r.it/$mass" && echo "$(date +"%d-%h-%Y %H.%M.%S")       -        http://z0r.it/$mass   -       $i">>$LOGDIR
+			fi
 		else
 			echo -e $RED"Bad Request"$FINE
 		fi
@@ -123,7 +134,7 @@ checkdep(){
 
 #option parser
 opsparser(){
-while getopts ":hvlde:c:m:" opt; do
+while getopts ":hvlrde:c:m:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -151,6 +162,9 @@ while getopts ":hvlde:c:m:" opt; do
 		l)	echo -e $GREEN"====================================================LOGs==============================================="$FINE
 			cat $LOGDIR
 			echo -e $GREEN"======================================================================================================="$FINE
+			exit 0
+		;;
+		r)	echo "" > $LOGDIR
 			exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
