@@ -23,7 +23,7 @@ readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
 ver='1.4'
-regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[-A-Za-z0-9\+&@#/%=~_|():?]+'
+regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
 mode=-s
@@ -105,7 +105,7 @@ is_url(){
 		echo -e  $RED"Page does not exist"$FINE
 		fi
 	else
-		echo -e  $RED"Enter a valid url"$FINE
+		echo -e  $RED""$1" is not a valid url"$FINE
 	fi
 	fi
 }
@@ -159,7 +159,7 @@ while getopts ":hvlde:c:m:" opt; do
 		esac
 done
 }
-if [[ $1=="" ]]; then
+if [ $# -eq 0 ]; then
 	set -- "$clip"
 	is_url $1
 else
