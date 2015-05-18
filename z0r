@@ -29,6 +29,7 @@ url=(http://$1)
 mode=-s
 dep=(curl awk xclip wget)
 apikey=4e4b657a91
+clip=$(xclip -o)
 LOGDIR=/$HOME/.z0r_logs
 #upload function (long -> short)
 shr(){
@@ -158,6 +159,10 @@ while getopts ":hvlde:c:m:" opt; do
 		esac
 done
 }
-
+if [[ $1=="" ]]; then
+	set -- "$clip"
+	is_url $1
+else
 opsparser $@
 is_url $1 $2
+fi
