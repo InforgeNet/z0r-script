@@ -145,7 +145,7 @@ del_history(){
 check_ver(){
 	r_ver=$(curl -s "https://api.github.com/repos/InforgeNet/z0r-script/releases" | egrep -m 1 --color 'tag_name":\s*".*"' | cut -d '"' -f 4)
 	if [ ! "$r_ver" = "$ver" ]; then
-        	echo -e $GREEN"Update found"$FINE
+        	echo -e $GREEN"Update found(https://github.com/InforgeNet/z0r-script)"$FINE
 	else
 		echo -e $RED"No update found"$FINE
 fi
