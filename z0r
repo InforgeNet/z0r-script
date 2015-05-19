@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.6'
+ver='v1.6.1'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -34,7 +34,7 @@ LOGDIR=/$HOME/.z0r_logs
 #upload function (long -> short)
 shr(){
 	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1"|awk -F '/' '{print$NF}')
-	uc="$http://z0r.it/$short"
+	uc="http://z0r.it/$short"
 	if  [ -n "$short" ]; then
 		if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$1" |grep -q "Errore 406"; then
                 	echo -e $RED"Error 406 - URL not valid(try to use https instead of http)"$FINE
