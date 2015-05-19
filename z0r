@@ -131,7 +131,16 @@ checkdep(){
 	fi
 	done
 }
-
+del_history(){
+	echo -e $RED"Are you sure? History can not be restored [y/n]"$FINE
+	read input
+	case $input in
+		[Yy]) echo "" > $LOGDIR
+		;;
+		*) exit 0
+		;;
+	esac
+}
 #option parser
 opsparser(){
 while getopts ":hvlrde:c:m:" opt; do
@@ -164,7 +173,7 @@ while getopts ":hvlrde:c:m:" opt; do
 			echo -e $GREEN"======================================================================================================="$FINE
 			exit 0
 		;;
-		r)	echo "" > $LOGDIR
+		r)	del_history
 			exit 0
 		;;
 		\?) 	echo -e $RED"enter a valid option, use -h for help"$FINE
