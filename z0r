@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='1.5'
+ver='v1.6'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -72,6 +72,7 @@ help(){
 	echo "		-l					show shorting history"
 	echo "		-m <long_URL1> <long_URL2> ...		mass shorting"
 	echo "		-r					reset history"
+	echo "		-u					show updates"
 	echo -e $GREEN"======================================================================================"$FINE
 
 	}
@@ -141,9 +142,17 @@ del_history(){
 		;;
 	esac
 }
+check_ver(){
+	r_ver=$(curl -s "https://api.github.com/repos/InforgeNet/z0r-script/releases" | egrep -m 1 --color 'tag_name":\s*".*"' | cut -d '"' -f 4)
+	if [ ! "$r_ver" = "$ver" ]; then
+        	echo -e $GREEN"Update found"$FINE
+	else
+		echo -e $RED"No update found"$FINE
+fi
+}
 #option parser
 opsparser(){
-while getopts ":hvlrde:c:m:" opt; do
+while getopts ":hvulrde:c:m:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -163,6 +172,9 @@ while getopts ":hvlrde:c:m:" opt; do
 		;;
 		m)
 			mss $@
+			exit 0
+		;;
+		u)	check_ver
 			exit 0
 		;;
 		v)	echo $ver
