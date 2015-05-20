@@ -29,7 +29,7 @@ url=(http://$1)
 mode=-s
 dep=(curl awk xclip wget)
 apikey=4e4b657a91
-clip=$(xclip -o)
+clip=$(xclip -o 2>/dev/null)
 LOGDIR=/$HOME/.z0r_logs
 #upload function (long -> short)
 shr(){
