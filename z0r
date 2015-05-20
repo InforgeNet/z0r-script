@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.6.2'
+ver='v1.7'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -125,7 +125,7 @@ is_url(){
 checkdep(){
 	for i in "${dep[@]}"; do
         if  ( ! which $i &>/dev/null ); then
-        	echo -e $RED"$i not found, solve the dipendencies before running the script"$FINE 
+        	echo -e $RED"$i not found, solve the dipendencies before running the script"$FINE
 		missing="1"
 	fi
 	done
@@ -143,7 +143,15 @@ del_history(){
 check_ver(){
 	r_ver=$(curl -s "https://api.github.com/repos/InforgeNet/z0r-script/releases" | egrep -m 1 --color 'tag_name":\s*".*"' | cut -d '"' -f 4)
 	if [ ! "$r_ver" = "$ver" ]; then
-        	echo -e $GREEN"Update found(https://github.com/InforgeNet/z0r-script)"$FINE
+        	echo -e $BLUE"$r_ver"$FINE $GREEN"update found(https://github.com/InforgeNet/z0r-script)"$FINE
+		echo -e $GREEN"Want to download the $r_ver release(zipball)?[y/n]"$FINE
+		read input
+		case $input in
+			[Yy]) wget -q --show-progress https://github.com/InforgeNet/z0r-script/zipball/master -O $HOME/z0r-$r_ver.zip
+			;;
+			*) exit 0
+			;;
+		esac
 	else
 		echo -e $RED"No update found"$FINE
 fi
@@ -193,12 +201,11 @@ done
 checkdep
 if [ "$missing" == "1" ]; then
         exit 0
-else
+fi
 opsparser $@
-if [ "$#"=="0" ]; then
+if [ "$#" == "0" ]; then
 	set -- "$clip"
 	is_url $1
 else
 	is_url $1 $2
-fi
 fi
