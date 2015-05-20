@@ -204,8 +204,8 @@ if [ "$missing" == "1" ]; then
 fi
 opsparser $@
 if [ "$#" == "0" ]; then
-	set -- "$clip" 2>/dev/null
-	is_url $1
+	set -- "$clip"
+	is_url $1 &2>/dev/null
 else
 	is_url $1 $2
 fi
