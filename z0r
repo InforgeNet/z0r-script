@@ -1,7 +1,7 @@
 #!/bin/bash
 #		Copyright (C) 2015  Nhoya.
 #
-#   gensum is free software: you can redistribute it and/or modify
+#   z0r is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
@@ -204,7 +204,7 @@ if [ "$missing" == "1" ]; then
 fi
 opsparser $@
 if [ "$#" == "0" ]; then
-	set -- "$clip"
+	set -- "$clip" 2>/dev/null
 	is_url $1
 else
 	is_url $1 $2
