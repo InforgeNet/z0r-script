@@ -205,7 +205,7 @@ fi
 opsparser $@
 if [ "$#" == "0" ]; then
 	set -- "$clip"
-	is_url $1 2>/dev/null
+	is_url $1
 else
 	is_url $1 $2
 fi
