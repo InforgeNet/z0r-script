@@ -22,7 +22,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.6.1'
+ver='v1.6.2'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -123,12 +123,10 @@ is_url(){
 }
 #check dipendencies
 checkdep(){
-	for i in "${dep[@]}"
-	do
-        	if ( which $i &>/dev/null ); then
-        	echo -e $GREEN"$i found"$FINE
-	else
-        	echo -e $RED"$i not found"$FINE
+	for i in "${dep[@]}"; do
+        if  ( ! which $i &>/dev/null ); then
+        	echo -e $RED"$i not found, solve the dipendencies before running the script"$FINE 
+		missing="1"
 	fi
 	done
 }
@@ -152,7 +150,7 @@ fi
 }
 #option parser
 opsparser(){
-while getopts ":hvulrde:c:m:" opt; do
+while getopts ":hvulre:c:m:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
@@ -165,9 +163,6 @@ while getopts ":hvulrde:c:m:" opt; do
 			exit 0
 		;;
 		c)	stats $@
-			exit 0
-		;;
-		d)	checkdep $i
 			exit 0
 		;;
 		m)
@@ -194,10 +189,16 @@ while getopts ":hvulrde:c:m:" opt; do
 		esac
 done
 }
-if [ $# -eq 0 ]; then
+
+checkdep
+if [ "$missing" == "1" ]; then
+        exit 0
+else
+opsparser $@
+if [ "$#"=="0" ]; then
 	set -- "$clip"
 	is_url $1
 else
-opsparser $@
-is_url $1 $2
+	is_url $1 $2
+fi
 fi
