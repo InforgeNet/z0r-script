@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #		Copyright (C) 2015  Nhoya.
 #
 #   z0r is free software: you can redistribute it and/or modify
@@ -22,7 +23,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.7.2'
+ver='v1.7.3'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -31,9 +32,9 @@ dep=(curl awk xclip wget)
 apikey=4e4b657a91
 clip=$(xclip -o 2>/dev/null)
 LOGDIR=/$HOME/.z0r_logs
-url_e=$(echo "$1"| sed 's/?/%3F/')
 #upload function (long -> short)
 shr(){
+	url_e=$(echo $1| sed 's/?/%3F/')
 	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e"|awk -F '/' '{print$NF}')
 	uc="http://z0r.it/$short"
 	if  [ -n "$short" ]; then
@@ -205,8 +206,7 @@ if [ "$missing" == "1" ]; then
 fi
 opsparser $@
 if [ "$#" == "0" ]; then
-	set -- "$clip"
-	is_url $1
+	is_url $clip
 else
 	is_url $1 $2
 fi
