@@ -23,7 +23,7 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.7.3'
+ver='v1.7.4'
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
 is_z0r='http://z0r.it/[^ \n]'
 url=(http://$1)
@@ -87,7 +87,7 @@ stats(){
 mss(){
 	for i in ${@:2}; do
 		mass=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')"|awk -F '/' '{print$NF}')
-	if wget --spider "$i" 2>/dev/null || curl -s --head $1 |head -n 1 |grep -q "405"; then
+	if wget --spider "$i" 2>/dev/null || curl -s --head $i |head -n 1 |grep -q "405"; then
  		if  [ -n "$mass" ] ; then
 			if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')" |grep -q "Errore 406"; then
                         	echo -e $RED"Error 406 - URL not valid(try to use https instead of http)"$FINE
