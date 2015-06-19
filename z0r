@@ -23,26 +23,28 @@ readonly YELLOW="\033[00;33m"
 readonly BOLD="\033[01m"
 readonly FINE="\033[0m"
 
-ver='v1.7.4'
-regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*\.[A-Za-z0-9\+&@%#/=~_|():?]+'
-is_z0r='http://z0r.it/[^ \n]'
-url=(http://$1)
+ver='v1.8'
+regex='((https?)*:\/\/)*[-A-Za-z0-9\+&@#/%?=~_|!:,.;]+\.[A-Za-z0-9\+&@%#/=~_|():?]{2,}'
 mode=-s
 dep=(curl awk xclip wget)
 apikey=4e4b657a91
 clip=$(xclip -o 2>/dev/null)
 LOGDIR=/$HOME/.z0r_logs
+
 #upload function (long -> short)
 shr(){
 	url_e=$(echo $1| sed 's/?/%3F/')
-	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e"|awk -F '/' '{print$NF}')
-	uc="http://z0r.it/$short"
+	short=$(curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e")
 	if  [ -n "$short" ]; then
-		if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e" |grep -q "Errore 406"; then
-                	echo -e $RED"Error 406 - URL not valid(try to use https instead of http or try encoding the URL)"$FINE
-        	else
-			echo "http://z0r.it/$short" && echo "$(date +"%d-%h-%Y %H.%M.%S")	-	 $uc	-	$1">>$LOGDIR
-        		echo "$uc" |xclip -selection clipboard
+		if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e" |grep -q "Unreachable"; then
+                	echo -e $RED"Invalid URL"$FINE
+		elif  [ -n "$2" ]; then
+			if  curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&keyword=$2&format=simply&url=$url_e" |grep -q "already exists"; then
+                        echo -e $RED"Custom URL already exists"$FINE
+			fi
+		else
+			echo "$short" && echo "$(date +"%d-%h-%Y %H.%M.%S")	-	 $short	-	$1">>$LOGDIR
+        		echo "$short" |xclip -selection clipboard
 		fi
 	else
 	if [ -n "$2" ]; then
@@ -50,13 +52,7 @@ shr(){
 	fi
 	fi
 	}
-#expand function (short -> long)
-expand(){
-	avi=$(echo ${@:2} |awk -F '/' '{print$NF}')
-	exp=$(curl $mode -L  "http://z0r.it/yourls-api.php?signature=$apikey&action=expand&title=check_with_z0r_scipt&format=simply&shorturl=$avi")
-	echo $exp
-	echo "$exp" |xclip -selection clipboard
-	}
+
 #help screen
 help(){
 	echo -e "$YELLOW$BOLD$0$FINE $GREEN$ver$FINE, faster uploader for z0r.it shortner. Based on YOURL API"
@@ -67,10 +63,8 @@ help(){
 	echo ""
 	echo -e $GREEN"======================================================================================"$FINE
 	echo " Available Options:"
-	echo "		-e <short_URL>				expand URL (short -> long)"
 	echo "		-h 					display this page"
 	echo "		-c <short_URL>				display numbers of clicks"
-	echo "		-d					check dependencies"
 	echo "		-l					show shorting history"
 	echo "		-m <long_URL1> <long_URL2> ...		mass shorting"
 	echo "		-r					reset history"
@@ -80,48 +74,32 @@ help(){
 	}
 #stats
 stats(){
-	lil=$(echo ${@:2} |awk -F '/' '{print$NF}')
+	lil=$(echo $OPTARG |awk -F '/' '{print$NF}')
 	click=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=url-stats&format=json&shorturl=$lil"|grep -Po '"clicks":.*?[^\\]"')
 	echo $click
 }
 mss(){
 	for i in ${@:2}; do
-		mass=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')"|awk -F '/' '{print$NF}')
-	if wget --spider "$i" 2>/dev/null || curl -s --head $i |head -n 1 |grep -q "405"; then
+		mass=$(curl -s -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')")
  		if  [ -n "$mass" ] ; then
-			if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')" |grep -q "Errore 406"; then
-                        	echo -e $RED"Error 406 - URL not valid(try to use https instead of http)"$FINE
+			if curl $mode -L "http://z0r.it/yourls-api.php?signature=$apikey&action=shorturl&title=uploaded_with_z0r_script&format=simply&url=$(echo $i| sed 's/?/%3F/')" |grep -q "Unreachable"; then
+                        	echo -e $RED"Invalid URL"$FINE
                 	else
 
-				echo "http://z0r.it/$mass" && echo "$(date +"%d-%h-%Y %H.%M.%S")       -        http://z0r.it/$mass   -       $i">>$LOGDIR
+				echo "$mass" && echo "$(date +"%d-%h-%Y %H.%M.%S")       -        $mass   -       $i">>$LOGDIR
 			fi
 		else
 			echo -e $RED"Bad Request"$FINE
 		fi
-	else
-	echo -e $RED"$i is not a valir URL"$FINE
-	fi
 	done
 }
 #control over argument
 is_url(){
-	if [[ $1 =~ $regex ]];then
-		if wget --spider "$1" 2>/dev/null || curl $mode --head $1 |head -n 1 |grep -q "405"; then
+		if [[ $1 =~ $regex ]];then
 		shr $1 $2
 		else
-		echo -e $RED"Page does not exist"$FINE
+		echo -e $RED""$1" is not a valid URL"$FINE
 		fi
-	else
-	if [[ $url =~ $regex ]];then
-		if wget --spider "$1" 2>/dev/null || curl $mode --head $1 |head -n 1 |grep -q "405"|grep -q "405" ; then
-			shr $1 $2
-		else
-		echo -e  $RED"Page does not exist"$FINE
-		fi
-	else
-		echo -e  $RED""$1" is not a valid url"$FINE
-	fi
-	fi
 }
 #check dipendencies
 checkdep(){
@@ -160,19 +138,12 @@ fi
 }
 #option parser
 opsparser(){
-while getopts ":hvulre:c:m:" opt; do
+while getopts ":hvulr:c:m:" opt; do
 		case "$opt" in
 		h)	help
 		exit 0
 		;;
-		e)	if [[ ${@:2} =~ $is_z0r ]];then
-				expand $@
-			else
-				echo -e  $RED"Enter a valid z0r url(http://z0r.it/...)"$FINE
-			fi
-			exit 0
-		;;
-		c)	stats $@
+		c)	stats $OPTARG
 			exit 0
 		;;
 		m)
